@@ -186,7 +186,7 @@ while [[ $# -gt 0 ]]; do
       ${sudo} "${apt}" show "$@"
       break
       ;;
-    policy|p)
+    policy|pl)
       shift
       ${sudo} "${apt}" policy "$@"
       break
