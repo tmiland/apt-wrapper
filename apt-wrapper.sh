@@ -94,6 +94,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}autoclean    ${NORMAL}|ac     ${GREEN}clears out the local repository${NORMAL}"
   printf "%s\\n" "  ${YELLOW}clean        ${NORMAL}|c      ${GREEN}clears out the local repository${NORMAL}"
   printf "%s\\n" "  ${YELLOW}show         ${NORMAL}|sh     ${GREEN}Show information about package(s)${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}policy       ${NORMAL}|p      ${GREEN}displays information about the package(s)${NORMAL}"
   printf "%s\\n" "  ${YELLOW}list         ${NORMAL}|l      ${GREEN}display a list of packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}edit-sources ${NORMAL}|es     ${GREEN}lets you edit your sources.list${NORMAL}"
   printf "%s\\n" "  ${YELLOW}search       ${NORMAL}|s      ${GREEN}search for available packages${NORMAL}"
@@ -183,6 +184,11 @@ while [[ $# -gt 0 ]]; do
     show|sh)
       shift
       ${sudo} "${apt}" show "$@"
+      break
+      ;;
+    policy|p)
+      shift
+      ${sudo} "${apt}" policy "$@"
       break
       ;;
     edit-sources|es)

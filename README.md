@@ -54,6 +54,7 @@ Usage:  apt-wrapper [options]
   clean        |c      clears out the local repository
   show         |sh     Show information about package(s)
   list         |l      display a list of packages
+  policy       |p      displays information about the package(s)  
   edit-sources |es     lets you edit your sources.list
   search       |s      search for available packages
   find         |f      package searching utility
