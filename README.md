@@ -41,24 +41,25 @@ apt help
 Usage:  apt-wrapper [options]
   If called without arguments, shows help.
 
-  help         |h      display this help and exit
-  update       |up     update package information
-  upgrade      |upg    upgrade available packages
-  full-upgrade |fupg   full-upgrade. See: man apt(8)
-  install      |i      install one or more packages
-  reinstall    |ri     reinstall one or more packages
-  remove       |r      remove one or more packages
-  purge        |p      purge one or more packages
-  autoremove   |ar     clean up unused dependencies
-  autoclean    |ac     clears out the local repository
-  clean        |c      clears out the local repository
-  show         |sh     Show information about package(s)
-  list         |l      display a list of packages
-  policy       |p      displays information about the package(s)  
-  edit-sources |es     lets you edit your sources.list
-  search       |s      search for available packages
-  find         |f      package searching utility
-  apt-mark     |am     set/unset settings for a package
+  help               |h      display this help and exit
+  update             |up     update package information
+  upgrade            |upg    upgrade available packages
+  full-upgrade       |fupg   full-upgrade. See: man apt(8)
+  install            |i      install one or more packages
+  reinstall          |ri     reinstall one or more packages
+  remove             |r      remove one or more packages
+  purge              |p      purge one or more packages
+  autoremove         |ar     clean up unused dependencies
+  autoclean          |ac     clears out the local repository
+  clean              |c      clears out the local repository
+  show               |sh     Show information about package(s)
+  list               |l      display a list of packages
+  policy             |p      displays information about the package(s)  
+  edit-sources       |es     lets you edit your sources.list
+  search             |s      search for available packages
+  find               |f      package searching utility
+  apt-mark           |am     set/unset settings for a package
+  add-apt-repository |aar    add apt repo from ppa.launchpad.net  
 
   Script version: 1.0.0 | Enable apt progressbar with --progress-bar
 ```
@@ -72,6 +73,13 @@ Install apt progressbar opt runs code:
 ```
 Now close and start a new terminal window.
 
+add-apt-repository:
+
+```bash
+
+apt aar ppa:git-core/ppa
+```
+
 ## Uninstalling
 
 `sudo rm /usr/bin/apt-wrapper`
@@ -81,6 +89,8 @@ Now close and start a new terminal window.
 
 - Inspired by: [Itai-Nelken/aptpac](https://github.com/Itai-Nelken/aptpac)
 - scolors [swelljoe/scolors](http://github.com/swelljoe/scolors)
+- PeterDaveHello/add-apt-ppa [PeterDaveHello/add-apt-ppa](https://github.com/PeterDaveHello/add-apt-ppa)
+- timothyvanderaerden/add-apt-repository [timothyvanderaerden/add-apt-repository](https://github.com/timothyvanderaerden/add-apt-repository)
 
 ## Donations
 <a href="https://coindrop.to/tmiland" target="_blank"><img src="https://coindrop.to/embed-button.png" style="border-radius: 10px; height: 57px !important;width: 229px !important;" alt="Coindrop.to me"></img></a>
