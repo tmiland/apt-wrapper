@@ -87,6 +87,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}upgrade      ${NORMAL}|upg    ${GREEN}upgrade available packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}full-upgrade ${NORMAL}|fupg   ${GREEN}full-upgrade. See: man apt(8)${NORMAL}"
   printf "%s\\n" "  ${YELLOW}install      ${NORMAL}|i      ${GREEN}install one or more packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}deb-install  ${NORMAL}|di     ${GREEN}install local deb package${NORMAL}"
   printf "%s\\n" "  ${YELLOW}reinstall    ${NORMAL}|ri     ${GREEN}reinstall one or more packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}remove       ${NORMAL}|r      ${GREEN}remove one or more packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}purge        ${NORMAL}|p      ${GREEN}purge one or more packages${NORMAL}"
@@ -118,6 +119,7 @@ elif [[ ! $(which sudo) ]]; then
 fi
 
 apt="apt"
+dpkg="dpkg"
 sudo="sudo"
 
 while [[ $# -gt 0 ]]; do
@@ -125,6 +127,11 @@ while [[ $# -gt 0 ]]; do
     install|i)
       shift
       ${sudo} "${apt}" install "$@"
+      break
+      ;;
+    deb-install|di)
+      shift
+      ${sudo} "${dpkg}" --install "$@"
       break
       ;;
     reinstall|ri)
