@@ -2,7 +2,7 @@
 # shellcheck disable=SC2086,SC2181
 ## Author: Tommy Miland (@tmiland) - Copyright (c) 2022
 
-VERSION='1.0.1'
+VERSION='1.0.2'
 
 #------------------------------------------------------------------------------#
 #
@@ -102,6 +102,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}find               ${NORMAL}|f      ${GREEN}package searching utility${NORMAL}"
   printf "%s\\n" "  ${YELLOW}apt-mark           ${NORMAL}|am     ${GREEN}set/unset settings for a package${NORMAL}"
   printf "%s\\n" "  ${YELLOW}add-apt-repository ${NORMAL}|aar    ${GREEN}add apt repo from ppa.launchpad.net${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}ppa-purge          ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
   echo
   printf "%s\\n" "  Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
   echo
@@ -171,6 +172,14 @@ add-apt-repository() {
   fi
   echo "$LAUNCHPAD$PPA added to your system"
   echo ""
+}
+
+ppa_purge() {
+  if dpkg -s ppa-purge &>/dev/null; then
+    ${sudo} ppa-purge "$@"
+  else
+    echo "ppa-purge is not installed"
+  fi
 }
 
 while [[ $# -gt 0 ]]; do
@@ -262,6 +271,11 @@ while [[ $# -gt 0 ]]; do
     add-apt-repository|aar)
       shift
       add-apt-repository "$@"
+      break
+      ;;
+    ppa-purge|ppp)
+      shift
+      ppa_purge "$@"
       break
       ;;
     help|-h|--help|-help)
