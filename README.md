@@ -60,8 +60,8 @@ Usage:  apt-wrapper [options]
   find               |f      package searching utility
   apt-mark           |am     set/unset settings for a package
   add-apt-repository |aar    add apt repo from ppa.launchpad.net
-  ppa-purge          |ppp    purge apt repo from ppa.launchpad.net  
-
+  ppa-purge          |ppp    purge apt repo from ppa.launchpad.net
+  add-private-repo   |apr    add private apt repo
   Script version: 1.0.0 | Enable apt progressbar with --progress-bar
 ```
 
@@ -93,6 +93,45 @@ apt ppp ppa:git-core/ppa
 ```
 ***will revert to standard packages*** (If there are any)
 
+### add-private-repo
+
+Add private apt repo
+
+```bash
+
+apt apr
+```
+Looks like this:
+<details><summary>*truncated* **click to view**</summary><p>
+
+```bash
+apt apr
+Are you ready to add a private repo? [y/n]: y
+Name of the private repo: (e.g: git-core) vscodium
+
+Please paste the link to the archive-keyring.gpg: https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
+
+Repo line must contain: [signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg]
+or else updating the repo will fail with missing key.
+
+Please paste the repo line (starting with deb): deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main
+
+You entered: 
+
+ repo name: vscodium
+ gpg key  : https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
+ repo line: deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main
+
+Repo is ready to be installed, press any key to continue, or ctrl+c to cancel...
+
+deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main
+
+Key added to /usr/share/keyrings/vscodium-archive-keyring.gpg
+
+vscodium added to your system
+Your app is ready to install
+```
+</p></details>
 
 ## Uninstalling
 
