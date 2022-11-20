@@ -62,7 +62,7 @@ Usage:  apt-wrapper [options]
   add-apt-repository |aar    add apt repo from ppa.launchpad.net
   ppa-purge          |ppp    purge apt repo from ppa.launchpad.net
   add-private-repo   |apr    add private apt repo
-  
+
   Script version: 1.0.0 | Enable apt progressbar with --progress-bar
 ```
 
