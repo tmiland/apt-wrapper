@@ -59,12 +59,13 @@ Usage:  apt-wrapper [options]
   search             |s      search for available packages
   find               |f      package searching utility
   apt-mark           |am     set/unset settings for a package
-  add-apt-repository |aar    add apt repo from ppa.launchpad.net  
+  add-apt-repository |aar    add apt repo from ppa.launchpad.net
+  ppa-purge          |ppp    purge apt repo from ppa.launchpad.net  
 
   Script version: 1.0.0 | Enable apt progressbar with --progress-bar
 ```
 
-Install apt progressbar opt runs code:
+### Install apt progressbar opt runs code
 
 ```bash
   progfile=/etc/apt/apt.conf.d/99progressbar
@@ -73,17 +74,35 @@ Install apt progressbar opt runs code:
 ```
 Now close and start a new terminal window.
 
-add-apt-repository:
+### add-apt-repository
+
+Add repo from launchpad
 
 ```bash
 
 apt aar ppa:git-core/ppa
 ```
 
+### ppa-purge
+
+Purge repo from launchpad
+
+```bash
+
+apt ppp ppa:git-core/ppa
+```
+***will revert to standard packages*** (If there are any)
+
+
 ## Uninstalling
 
-`sudo rm /usr/bin/apt-wrapper`
-`sudo rm -rf $HOME/Documents/GitHub/apt-wrapper`
+```bash
+sudo rm /usr/bin/apt-wrapper
+```
+```bash
+sudo rm -rf $HOME/Documents/GitHub/apt-wrapper
+```
+Remove what was Added to .bashrc / .zshrc etc...
 
 ## Credits
 
