@@ -2,7 +2,7 @@
 # shellcheck disable=SC2086,SC2181
 ## Author: Tommy Miland (@tmiland) - Copyright (c) 2022
 
-VERSION='1.0.2'
+VERSION='1.0.3'
 
 #------------------------------------------------------------------------------#
 #
@@ -64,6 +64,11 @@ else
   NORMAL=''
 fi
 
+exit_error() {
+  echo "Error: $1"
+  exit 1
+}
+
 # Header
 header() {
   echo -e "${GREEN}\n"
@@ -103,6 +108,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}apt-mark           ${NORMAL}|am     ${GREEN}set/unset settings for a package${NORMAL}"
   printf "%s\\n" "  ${YELLOW}add-apt-repository ${NORMAL}|aar    ${GREEN}add apt repo from ppa.launchpad.net${NORMAL}"
   printf "%s\\n" "  ${YELLOW}ppa-purge          ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}add-private-repo   ${NORMAL}|apr    ${GREEN}add private apt repo${NORMAL}"
   echo
   printf "%s\\n" "  Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
   echo
@@ -123,6 +129,91 @@ fi
 apt="apt"
 dpkg="dpkg"
 sudo="sudo"
+
+add_private_repo() {
+  while [[ $PRIVATE_REPO != "y" && $PRIVATE_REPO != "n" ]]; do
+    read -r -p "Are you ready to add a private repo? [y/n]: " PRIVATE_REPO
+  done
+  while :;
+    do
+      case $PRIVATE_REPO in
+        [Yy]* )
+          read -r -p "${GREEN}Name of the private repo: (e.g: git-core)${NORMAL} " REPO_NAME
+          echo ""
+          read -r -p "${GREEN}Please paste the link to the archive-keyring.gpg:${NORMAL} " GPG_LINK
+          echo ""
+          echo "${YELLOW}Repo line must contain:${NORMAL} ${RED}[signed-by=/usr/share/keyrings/$REPO_NAME-archive-keyring.gpg]${NORMAL}"
+          echo "or else updating the repo will fail with missing key.${NORMAL}"
+          echo ""
+          read -r -p "${GREEN}Please paste the repo line (starting with deb):${NORMAL} " REPO_LINE
+          echo ""
+          echo -e "You entered: \n"
+          echo -e " repo name: ${GREEN}$REPO_NAME${NORMAL}"
+          echo -e " gpg key  : ${GREEN}$GPG_LINK${NORMAL}"
+          echo -e " repo line: ${GREEN}$REPO_LINE${NORMAL}"
+          echo ""
+          read -n1 -r -p "Repo is ready to be installed, press any key to continue, or ctrl+c to cancel..."
+          echo ""
+          archive_list=/etc/apt/sources.list.d/$REPO_NAME.list
+          archive_keyring="/usr/share/keyrings/${REPO_NAME}-archive-keyring.gpg"
+          wget -qO - $GPG_LINK | gpg --dearmor | ${sudo} tee $archive_keyring > /dev/null
+          # Check if keyfile is the right type
+          keyfiletype=$(file "$archive_keyring" | grep -c 'OpenPGP Public Key Version 4\|PGP/GPG key public ring (v4)')
+          if [ "$keyfiletype" -eq 0 ]; then
+            echo "${RED}$archive_keyring is not a PGP/GPG key public ring${NORMAL}"
+            # Check tmpfile type and convert
+            tmppath=/tmp
+            tmpfile=$tmppath/${REPO_NAME}-archive-keyring.gpg
+            ${sudo} cp -rp $archive_keyring $tmpfile
+            echo "Converting keyfile..."
+            case $(file "$tmpfile") in
+              # ASCII armored (old)
+              *'PGP public key block Public-Key (old)')
+                gpg --batch --yes --dearmor --keyring=gnupg-ring "$tmpfile"
+                ;;
+              # Secret key
+              *'PGP public key block Secret-Key')
+                gpg --batch --yes --no-default-keyring --keyring=gnupg-ring:"$tmppath/temp-keyring.gpg" --quiet --import "$tmpfile"
+                gpg --batch --yes --no-default-keyring --keyring=gnupg-ring:"$tmppath/temp-keyring.gpg" --export --output "$tmpfile"
+                rm "$tmppath/temp-keyring.gpg"
+                [ -f "$tmppath/temp-keyring.gpg~" ] && rm "$tmppath/temp-keyring.gpg~"
+                ;;
+              # Public ring (v4)
+              *'OpenPGP Public Key Version 4\|PGP/GPG key public ring (v4)'*)
+                ${sudo} cp -rp "$tmpfile" "$archive_keyring"
+                ;;
+              *)
+                exit_error "invalid input keyfile format"
+                ;;
+            esac
+          fi
+          if [[ ! -f $archive_keyring ]]; then
+            echo "${YELLOW}${REPO_NAME}-archive-keyring.gpg does not exist...${NORMAL}"
+            exit_error "${RED}Something went wrong!${NORMAL}"
+          fi
+          echo "$REPO_LINE" | ${sudo} tee $archive_list
+          if [[ ! -f $archive_list ]]; then
+            echo "${YELLOW}$archive_list does not exist...${NORMAL}"
+            exit_error "${RED}Something went wrong!${NORMAL}"
+          fi
+          ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$archive_list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" &> /dev/null
+          #success message
+          if [ -n "$archive_keyring" ]; then
+            echo ""
+            echo "Key added to $archive_keyring"
+            echo ""
+          else
+            exit_error "${RED}Something went wrong!${NORMAL}"
+          fi
+          echo "$REPO_NAME added to your system"
+          echo "Your app is ready to install"
+          exit 1
+        ;;
+        [Nn]* )
+          break ;;
+    esac
+  done
+}
 
 add-apt-repository() {
   # Credits: 
@@ -276,6 +367,11 @@ while [[ $# -gt 0 ]]; do
     ppa-purge|ppp)
       shift
       ppa_purge "$@"
+      break
+      ;;
+    add-private-repo|apr)
+      shift
+      add_private_repo
       break
       ;;
     help|-h|--help|-help)
