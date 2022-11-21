@@ -2,7 +2,7 @@
 # shellcheck disable=SC2086,SC2181
 ## Author: Tommy Miland (@tmiland) - Copyright (c) 2022
 
-VERSION='1.0.3'
+VERSION='1.0.4'
 
 #------------------------------------------------------------------------------#
 #
