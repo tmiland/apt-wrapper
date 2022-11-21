@@ -46,6 +46,8 @@ Usage:  apt-wrapper [options]
   upgrade            |upg    upgrade available packages
   full-upgrade       |fupg   full-upgrade. See: man apt(8)
   install            |i      install one or more packages
+  deb-install        |di     install local deb package
+  download           |dl     download deb package from repo
   reinstall          |ri     reinstall one or more packages
   remove             |r      remove one or more packages
   purge              |p      purge one or more packages
@@ -53,8 +55,8 @@ Usage:  apt-wrapper [options]
   autoclean          |ac     clears out the local repository
   clean              |c      clears out the local repository
   show               |sh     Show information about package(s)
+  policy             |p      displays information about the package(s)
   list               |l      display a list of packages
-  policy             |p      displays information about the package(s)  
   edit-sources       |es     lets you edit your sources.list
   search             |s      search for available packages
   find               |f      package searching utility
