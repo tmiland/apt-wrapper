@@ -4,11 +4,11 @@ echo -e "\e[1mUSAGE: run install to install and install uninstall to uninstall.\
 install_dir="${HOME}"/.apt-wrapper
 install() {
 	if [[ ! -d  ${install_dir} ]]; then
-		sudo mkdir -p "${install_dir}"
+		mkdir -p "${install_dir}"
 		git clone https://github.com/tmiland/apt-wrapper.git "${install_dir}"
 	fi
 	sudo ln -s "${install_dir}"/apt-wrapper.sh /usr/bin/apt-wrapper
-	sudo chmod +x "${install_dir}"/apt-wrapper.sh
+	chmod +x "${install_dir}"/apt-wrapper.sh
 	if [ -n "$ZSH_VERSION" ]; then
 	  echo "source ${install_dir}/apt_wrapper_alias" >> "${HOME}"/.zshrc
 		source "${HOME}"/.zshrc
@@ -26,7 +26,8 @@ uninstall() {
 		sed -i "/source ${install_dir}/apt_wrapper_alias/d" "${HOME}"/.bashrc
 		source "${HOME}"/.bashrc
 	fi
-	rm -r /usr/bin/apt-wrapper
+	sudo rm -r /usr/bin/apt-wrapper
+	rm -rf "${install_dir}"
 }
 
 if [[ "$1" == "uninstall" ]]; then
