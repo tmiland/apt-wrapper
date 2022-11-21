@@ -59,6 +59,7 @@ Usage:  apt-wrapper [options]
   add-apt-repository |aar    add apt repo from ppa.launchpad.net
   ppa-purge          |ppp    purge apt repo from ppa.launchpad.net
   add-private-repo   |apr    add private apt repo
+  app-install        |api    add private apt repo for provided apps  
 
   Script version: 1.0.0 | Enable apt progressbar with --progress-bar
 ```
@@ -143,6 +144,44 @@ vscodium added to your system
 Your app is ready to install
 ```
 </p></details>
+
+### app-install
+
+add private apt repo for provided apps
+
+To list all available apps
+```bash
+apt api list
+```
+To install repo for app
+```bash
+apt api install <APP>
+```
+To uninstall repo for app
+```bash
+apt api uninstall <APP>
+```
+_This will copy list and gpg keys to your system,
+and all you have to do is to install the app._
+
+If you want to contribute to the list of apps,
+please install the repo for the app first with:
+
+```bash
+apt apr
+```
+Follow the promts to ensure the list and key will correspond with the **appname**.
+Then you can open a pull request with the generated list and key.
+
+Once approved, they will be added to the repo for everyone to use.
+
+#### Note
+The lists provided are used on Debian bookworm
+If you use any other distro, you may need to edit the repo.
+```bash
+apt es <APP>
+```
+Will let you edit the corresponding sources list.
 
 ## Uninstalling
 

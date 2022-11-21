@@ -127,6 +127,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}add-apt-repository ${NORMAL}|aar    ${GREEN}add apt repo from ppa.launchpad.net${NORMAL}"
   printf "%s\\n" "  ${YELLOW}ppa-purge          ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
   printf "%s\\n" "  ${YELLOW}add-private-repo   ${NORMAL}|apr    ${GREEN}add private apt repo${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}app-install        ${NORMAL}|api    ${GREEN}add private apt repo for provided apps${NORMAL}"
   echo
   printf "%s\\n" "  Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
   echo
@@ -170,6 +171,45 @@ deb_install() {
   else
     ${sudo} "${dpkg}" --install "$@"
   fi
+}
+
+app_install() {
+  install_dir="${HOME}"/.apt-wrapper
+  if [[ -d $install_dir ]]; then
+    lists=$install_dir/lists/
+    keys=$install_dir/keyrings/
+  else
+    lists=./lists
+    keys=./keyrings
+  fi
+  
+  APPS=$(ls $lists/)
+  case $1 in
+    list|l)
+      for APP in "${APPS[@]}"; do
+        echo "${APP##*/}" | sed -e 's/\..*$//'
+      done
+      ;;
+    install|i)
+    APP=$2
+    archive_list=/etc/apt/sources.list.d/$APP.list
+      ${sudo} cp -rp $lists/${APP}.list /etc/apt/sources.list.d/
+      ${sudo} chown root:root /etc/apt/sources.list.d/${APP}.list
+      ${sudo} cp -rp $keys/${APP}-archive-keyring.gpg /usr/share/keyrings/
+      ${sudo} chown root:root /usr/share/keyrings/${APP}-archive-keyring.gpg
+      ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$archive_list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" &> /dev/null
+      message info "$APP repo added to your system"
+      message info "Install with apt install $APP"
+      ;;
+    uninstall|u)
+    APP=$2
+    archive_list=/etc/apt/sources.list.d/$APP.list
+      ${sudo} rm $archive_list
+      ${sudo} rm /usr/share/keyrings/${APP}-archive-keyring.gpg
+      ${sudo} apt update
+      message info "$APP repo removed from your system"
+      ;;
+  esac
 }
 
 add_private_repo() {
@@ -419,6 +459,11 @@ while [[ $# -gt 0 ]]; do
     add-private-repo|apr)
       shift
       add_private_repo
+      break
+      ;;
+    app-install|api)
+      shift
+      app_install "$@"
       break
       ;;
     help|-h|--help|-help)
