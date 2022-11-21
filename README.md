@@ -46,7 +46,7 @@ Usage:  apt-wrapper [options]
   upgrade            |upg    upgrade available packages
   full-upgrade       |fupg   full-upgrade. See: man apt(8)
   install            |i      install one or more packages
-  deb-install        |di     install local deb package
+  deb-install        |di     install local or remote deb package
   download           |dl     download deb package from repo
   reinstall          |ri     reinstall one or more packages
   remove             |r      remove one or more packages
@@ -76,6 +76,19 @@ Usage:  apt-wrapper [options]
   ${sudo} chmod 644 $progfile
 ```
 Now close and start a new terminal window.
+
+### deb-install
+
+install local or remote deb package
+
+```bash
+apt di /path/to/app.deb
+```
+or
+```bash
+apt di https://url/to/app.deb
+```
+deb file will download to `/var/cache/apt/archives`
 
 ### add-apt-repository
 
