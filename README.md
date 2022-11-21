@@ -24,7 +24,7 @@ source $HOME/Documents/GitHub/apt-wrapper/apt_wrapper_alias
 ```
 Or run install script:
 ```bash
-curl -sSL https://raw.githubusercontent.com/tmiland/apt-wrapper/main/install | bash
+curl -sSL https://tmiland.github.io/apt-wrapper/install | bash
 ```
 _**This will install and symlink scripts from `$HOME/.apt-wrapper`**_
 
