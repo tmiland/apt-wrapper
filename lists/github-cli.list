@@ -1,0 +1,1 @@
+deb [arch=amd64 signed-by=/usr/share/keyrings/github-cli-archive-keyring.gpg] https://cli.github.com/packages stable main

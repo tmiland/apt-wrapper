@@ -1,0 +1,2 @@
+deb [signed-by=/usr/share/keyrings/obs-studio-archive-keyring.gpg] http://ppa.launchpad.net/obsproject/obs-studio/ubuntu kinetic main
+# deb-src http://ppa.launchpad.net/obsproject/obs-studio/ubuntu kinetic main

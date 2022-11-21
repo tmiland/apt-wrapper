@@ -1,0 +1,1 @@
+deb [arch=i386,amd64 signed-by=/usr/share/keyrings/winehq-archive-keyring.key] http://dl.winehq.org/wine-builds/debian/ bookworm main

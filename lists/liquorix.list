@@ -1,0 +1,2 @@
+deb [arch=amd64 signed-by=/usr/share/keyrings/liquorix-archive-keyring.gpg] https://liquorix.net/debian bookworm main
+# deb-src [arch=amd64 signed-by=/usr/share/keyrings/liquorix-archive-keyring.gpg] https://liquorix.net/debian bookworm main

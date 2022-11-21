@@ -1,0 +1,2 @@
+deb [signed-by=/usr/share/keyrings/copyq-archive-keyring.gpg] http://ppa.launchpad.net/hluk/copyq/ubuntu jammy main
+# deb-src http://ppa.launchpad.net/hluk/copyq/ubuntu jammy main
