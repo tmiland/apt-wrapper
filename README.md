@@ -19,7 +19,7 @@ Symlink script:
 Add to .bashrc / .zshrc etc...
 
 ```bash
-# app-wrapper alias
+# apt-wrapper alias
 sudo="sudo"
 apt() {
   command apt-wrapper "$@"
