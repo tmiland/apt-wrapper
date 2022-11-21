@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091
+echo -e "\e[1mUSAGE: run install to install and install uninstall to uninstall.\e[0m"
+install_dir="${HOME}"/.apt-wrapper
+install() {
+	if [[ ! -d  ${install_dir} ]]; then
+		sudo mkdir -p "${install_dir}"
+		git clone https://github.com/tmiland/apt-wrapper.git "${install_dir}"
+	fi
+	sudo ln -s "${install_dir}"/apt-wrapper.sh /usr/bin/apt-wrapper
+	sudo chmod +x "${install_dir}"/apt-wrapper.sh
+	if [ -n "$ZSH_VERSION" ]; then
+	  echo "source ${install_dir}/apt_wrapper_alias" >> "${HOME}"/.zshrc
+		source "${HOME}"/.zshrc
+	elif [ -n "$BASH_VERSION" ]; then
+		echo "source ${install_dir}/apt_wrapper_alias" >> "${HOME}"/.bashrc
+		source "${HOME}"/.bashrc
+	fi
+}
+
+uninstall() {
+	if [ -n "$ZSH_VERSION" ]; then
+	  sed -i "/source ${install_dir}/apt_wrapper_alias/d" "${HOME}"/.zshrc
+		source "${HOME}"/.zshrc
+	elif [ -n "$BASH_VERSION" ]; then
+		sed -i "/source ${install_dir}/apt_wrapper_alias/d" "${HOME}"/.bashrc
+		source "${HOME}"/.bashrc
+	fi
+	rm -r /usr/bin/apt-wrapper
+}
+
+if [[ "$1" == "uninstall" ]]; then
+	uninstall
+else
+	install
+fi
