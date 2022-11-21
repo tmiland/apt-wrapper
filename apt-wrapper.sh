@@ -93,6 +93,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}full-upgrade       ${NORMAL}|fupg   ${GREEN}full-upgrade. See: man apt(8)${NORMAL}"
   printf "%s\\n" "  ${YELLOW}install            ${NORMAL}|i      ${GREEN}install one or more packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}deb-install        ${NORMAL}|di     ${GREEN}install local deb package${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}download           ${NORMAL}|dl     ${GREEN}download deb package from repo${NORMAL}"
   printf "%s\\n" "  ${YELLOW}reinstall          ${NORMAL}|ri     ${GREEN}reinstall one or more packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}remove             ${NORMAL}|r      ${GREEN}remove one or more packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}purge              ${NORMAL}|p      ${GREEN}purge one or more packages${NORMAL}"
@@ -283,6 +284,11 @@ while [[ $# -gt 0 ]]; do
     deb-install|di)
       shift
       ${sudo} "${dpkg}" --install "$@"
+      break
+      ;;
+    download|dl)
+      shift
+      ${sudo} "${apt}" download "$@"
       break
       ;;
     reinstall|ri)
