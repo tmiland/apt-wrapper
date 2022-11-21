@@ -20,19 +20,14 @@ Add to .bashrc / .zshrc etc...
 
 ```bash
 # apt-wrapper alias
-sudo="sudo"
-apt() {
-  command apt-wrapper "$@"
-}
-sudo() {
-  if [ "$1" = "apt" ]; then
-    shift
-    command sudo apt-wrapper "$@"
-  else
-    command sudo "$@"
-  fi
-}
+source $HOME/Documents/GitHub/apt-wrapper/apt_wrapper_alias
 ```
+Or run install script:
+```bash
+curl -sSL https://raw.githubusercontent.com/tmiland/apt-wrapper/main/install | bash
+```
+_**This will install and symlink scripts from `$HOME/.apt-wrapper`**_
+
 Now you can use `apt [options]` as cmd instead of `apt-wrapper [options]`
 
 Help output:

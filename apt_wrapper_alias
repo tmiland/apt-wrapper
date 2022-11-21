@@ -1,0 +1,13 @@
+# apt-wrapper alias
+sudo="sudo"
+apt() {
+  command apt-wrapper "$@"
+}
+sudo() {
+  if [ "$1" = "apt" ]; then
+    shift
+    command sudo apt-wrapper "$@"
+  else
+    command sudo "$@"
+  fi
+}
