@@ -64,9 +64,26 @@ else
   NORMAL=''
 fi
 
-exit_error() {
-  echo "Error: $1"
-  exit 1
+message() {
+  if [ -z "${1}" ] || [ -z "${2}" ]; then
+    return
+  fi
+# Credit: deb-get
+MESSAGE_TYPE=""
+MESSAGE=""
+MESSAGE_TYPE="${1}"
+MESSAGE="${2}"
+
+case ${MESSAGE_TYPE} in
+  info)     echo -e "  [${GREEN}+${NORMAL}] ${MESSAGE}";;
+  progress) echo -en "  [${GREEN}+${NORMAL}] ${MESSAGE}";;
+  recommend)echo -e "  [${CYAN}!${NORMAL}] ${MESSAGE}";;
+  warn)     echo -e "  [${YELLOW}*${NORMAL}] WARNING! ${MESSAGE}";;
+  error)    echo -e "  [${RED}!${NORMAL}] ERROR! ${MESSAGE}" >&2;;
+  fatal)    echo -e "  [${RED}!${NORMAL}] ERROR! ${MESSAGE}" >&2
+    exit 1;;
+  *) echo -e "  [?] UNKNOWN: ${MESSAGE}";;
+esac
 }
 
 # Header
@@ -92,7 +109,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}upgrade            ${NORMAL}|upg    ${GREEN}upgrade available packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}full-upgrade       ${NORMAL}|fupg   ${GREEN}full-upgrade. See: man apt(8)${NORMAL}"
   printf "%s\\n" "  ${YELLOW}install            ${NORMAL}|i      ${GREEN}install one or more packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}deb-install        ${NORMAL}|di     ${GREEN}install local deb package${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}deb-install        ${NORMAL}|di     ${GREEN}install local or remote deb package${NORMAL}"
   printf "%s\\n" "  ${YELLOW}download           ${NORMAL}|dl     ${GREEN}download deb package from repo${NORMAL}"
   printf "%s\\n" "  ${YELLOW}reinstall          ${NORMAL}|ri     ${GREEN}reinstall one or more packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}remove             ${NORMAL}|r      ${GREEN}remove one or more packages${NORMAL}"
@@ -120,16 +137,40 @@ about() {
 }
 
 if [[ ! $(which apt) ]]; then
-  echo -e "${RED} Error: APT Not found! \n Sorry, your OS is not supported.${NORMAL}"
+  message error "Error: APT Not found! \n Sorry, your OS is not supported."
   exit 1;
 elif [[ ! $(which sudo) ]]; then
-  echo -e "${RED} Error: SUDO Not found! \n Please install sudo.${NORMAL}"
+  message error "Error: SUDO Not found! \n Please install sudo."
   exit 1;
 fi
 
 apt="apt"
 dpkg="dpkg"
 sudo="sudo"
+
+deb_download() {
+  # Credit: deb-get 
+  URL="${1}"
+  FILE="${URL##*/}"
+  CACHE_DIR=/var/cache/apt/archives
+
+  if ! ${sudo} wget --quiet --continue --show-progress --progress=bar:force:noscroll "${URL}" -O "${CACHE_DIR}/${FILE}"; then
+      message error "Failed to download ${URL}. Deleting ${CACHE_DIR}/${FILE}..."
+      ${sudo} rm "${CACHE_DIR}/${FILE}" 2>/dev/null
+      return 1
+  fi
+}
+
+deb_install() {
+  URL="${1}"
+  FILE="${URL##*/}"
+  if [[ "$1" = "$URL" ]]; then
+    deb_download "$URL"
+    ${sudo} "${dpkg}" --install "${CACHE_DIR}/${FILE}"
+  else
+    ${sudo} "${dpkg}" --install "$@"
+  fi
+}
 
 add_private_repo() {
   while [[ $PRIVATE_REPO != "y" && $PRIVATE_REPO != "n" ]]; do
@@ -161,12 +202,12 @@ add_private_repo() {
           # Check if keyfile is the right type
           keyfiletype=$(file "$archive_keyring" | grep -c 'OpenPGP Public Key Version 4\|PGP/GPG key public ring (v4)')
           if [ "$keyfiletype" -eq 0 ]; then
-            echo "${RED}$archive_keyring is not a PGP/GPG key public ring${NORMAL}"
+            message warn "$archive_keyring is not a PGP/GPG key public ring"
             # Check tmpfile type and convert
             tmppath=/tmp
             tmpfile=$tmppath/${REPO_NAME}-archive-keyring.gpg
             ${sudo} cp -rp $archive_keyring $tmpfile
-            echo "Converting keyfile..."
+            message info "Converting keyfile..."
             case $(file "$tmpfile") in
               # ASCII armored (old)
               *'PGP public key block Public-Key (old)')
@@ -189,25 +230,25 @@ add_private_repo() {
             esac
           fi
           if [[ ! -f $archive_keyring ]]; then
-            echo "${YELLOW}${REPO_NAME}-archive-keyring.gpg does not exist...${NORMAL}"
-            exit_error "${RED}Something went wrong!${NORMAL}"
+            message warn "${REPO_NAME}-archive-keyring.gpg does not exist..."
+            message fatal "Something went wrong!"
           fi
           echo "$REPO_LINE" | ${sudo} tee $archive_list
           if [[ ! -f $archive_list ]]; then
-            echo "${YELLOW}$archive_list does not exist...${NORMAL}"
-            exit_error "${RED}Something went wrong!${NORMAL}"
+            message warn "$archive_list does not exist..."
+            message fatal "Something went wrong!"
           fi
           ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$archive_list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" &> /dev/null
           #success message
           if [ -n "$archive_keyring" ]; then
             echo ""
-            echo "Key added to $archive_keyring"
+            message info "Key added to $archive_keyring"
             echo ""
           else
-            exit_error "${RED}Something went wrong!${NORMAL}"
+            message fatal "Something went wrong!"
           fi
-          echo "$REPO_NAME added to your system"
-          echo "Your app is ready to install"
+          message info "$REPO_NAME added to your system"
+          message info "Your app is ready to install"
           exit 1
         ;;
         [Nn]* )
@@ -259,10 +300,10 @@ add-apt-repository() {
   #success message
   if [ -n "$KEY" ]; then
     echo ""
-    echo "Key added to $archive_keyring"
+    message info "Key added to $archive_keyring"
     echo ""
   fi
-  echo "$LAUNCHPAD$PPA added to your system"
+  message info "$LAUNCHPAD$PPA added to your system"
   echo ""
 }
 
@@ -270,7 +311,7 @@ ppa_purge() {
   if dpkg -s ppa-purge &>/dev/null; then
     ${sudo} ppa-purge "$@"
   else
-    echo "ppa-purge is not installed"
+    message fatal "ppa-purge is not installed"
   fi
 }
 
@@ -283,7 +324,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     deb-install|di)
       shift
-      ${sudo} "${dpkg}" --install "$@"
+      deb_install "$@"
       break
       ;;
     download|dl)
