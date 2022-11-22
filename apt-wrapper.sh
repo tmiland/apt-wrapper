@@ -403,6 +403,9 @@ add-apt-repository() {
     # Else use provided second argument
     VERSION=$2
   fi
+  if [[ $INPUT = "" ]]; then
+    message fatal "No repo provided!"
+  fi
   # get ppa: git-core/ppa
   PPA=$(echo "$INPUT" | cut -d ':' -f 2)
   # Cuts down to: git-core
