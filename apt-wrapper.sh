@@ -383,30 +383,16 @@ add-apt-repository() {
   if [ -z ${2+x} ]; then
     if [[ $ID == "debian" ]]; then
       case $CODENAME in
-        buster)
-          VERSION=jammy
-        ;;
-        bullseye)
-          VERSION=kinetic
-        ;;
-        bookworm|sid)
-          VERSION=lunar
-        ;;
+        buster)       VERSION=jammy   ;;
+        bullseye)     VERSION=kinetic ;;
+        bookworm|sid) VERSION=lunar   ;;
       esac
     elif [[ $ID == "ubuntu" ]]; then
       case $CODENAME in
-        focal)
-          VERSION=focal
-        ;;
-        jammy)
-          VERSION=jammy
-        ;;
-        kinetic)
-          VERSION=kinetic
-        ;;
-        lunar)
-          VERSION=lunar
-        ;;
+        focal)   VERSION=focal   ;;
+        jammy)   VERSION=jammy   ;;
+        kinetic) VERSION=kinetic ;;
+        lunar)   VERSION=lunar   ;;
       esac
     else
       # Use jammy as default
