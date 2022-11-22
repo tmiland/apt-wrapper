@@ -86,6 +86,83 @@ case ${MESSAGE_TYPE} in
 esac
 }
 
+if ((BASH_VERSINFO[0] < 4)); then
+    message fatal "Sorry, you need bash 4.0 or newer to run $(basename "${0}")."
+fi
+
+if ! command -v lsb_release 1>/dev/null; then
+  message fatal "lsb_release not detected. Quitting."
+  message recommend "Install with 'apt install lsb-release' "
+  
+fi
+
+# OS Detection
+OS_ID=$(lsb_release --id --short)
+case "${OS_ID}" in
+  Debian) OS_ID_PRETTY="Debian";;
+  Linuxmint) OS_ID_PRETTY="Linux Mint";;
+  Neon) OS_ID_PRETTY="KDE Neon";;
+  Pop) OS_ID_PRETTY="Pop!_OS";;
+  Ubuntu) OS_ID_PRETTY="Ubuntu";;
+  Zorin) OS_ID_PRETTY="Zorin OS";;
+  *)
+    OS_ID_PRETTY="${OS_ID}"
+    message warn "${OS_ID} is not supported."
+  ;;
+esac
+
+OS_CODENAME=$(lsb_release --codename --short)
+
+if [ -e /etc/os-release ]; then
+    OS_RELEASE=/etc/os-release
+elif [ -e /usr/lib/os-release ]; then
+    OS_RELEASE=/usr/lib/os-release
+else
+    message fatal "os-release not found. Quitting"
+fi
+
+ID="$(grep "^ID=" ${OS_RELEASE} | cut -d'=' -f2)"
+
+# Fallback to ID_LIKE if ID was not 'ubuntu' or 'debian'
+if [ "${ID}" != ubuntu ] && [ "${ID}" != debian ]; then
+    ID_LIKE="$(grep "^ID_LIKE=" ${OS_RELEASE} | cut -d'=' -f2 | cut -d \" -f 2)"
+
+    if [[ " ${ID_LIKE} " =~ " ubuntu " ]]; then
+        ID=ubuntu
+    elif [[ " ${ID_LIKE} " =~ " debian " ]]; then
+        ID=debian
+    else
+        message fatal "${OS_ID_PRETTY} ${OS_CODENAME^} is not supported because it is not derived from a supported Debian or Ubuntu release."
+    fi
+fi
+
+CODENAME=$(grep "^UBUNTU_CODENAME=" ${OS_RELEASE} | cut -d'=' -f2)
+
+if [ -z "${CODENAME}" ]; then
+    CODENAME=$(grep "^DEBIAN_CODENAME=" ${OS_RELEASE} | cut -d'=' -f2)
+fi
+
+if [ -z "${CODENAME}" ]; then
+    CODENAME=$(grep "^VERSION_CODENAME=" ${OS_RELEASE} | cut -d'=' -f2)
+fi
+
+# Debian 12+
+if [ -z "${CODENAME}" ] && [ -e /etc/debian_version ]; then
+    CODENAME=$(cut -d / -f 1 /etc/debian_version)
+fi
+
+case "${CODENAME}" in
+    buster)   RELEASE="10";;
+    bullseye) RELEASE="11";;
+    bookworm) RELEASE="12";;
+    sid)      RELEASE="unstable";;
+    focal)    RELEASE="20.04";;
+    jammy)    RELEASE="22.04";;
+    kinetic)  RELEASE="22.10";;
+    lunar)    RELEASE="23.04";;
+    *) message fatal "${OS_ID_PRETTY} ${OS_CODENAME^} is not supported because it is not derived from a supported Debian or Ubuntu release.";;
+esac
+
 # Header
 header() {
   echo -e "${GREEN}\n"
@@ -304,11 +381,30 @@ add-apt-repository() {
   LAUNCHPAD=http://ppa.launchpad.net/
   INPUT=$1
   if [ -z ${2+x} ]; then
-    # Use jammy as default
-    VERSION=jammy
-  else
+    if [[ $ID == "debian" ]]; then
+      case $CODENAME in
+        buster)       VERSION=jammy   ;;
+        bullseye)     VERSION=kinetic ;;
+        bookworm|sid) VERSION=lunar   ;;
+      esac
+    elif [[ $ID == "ubuntu" ]]; then
+      case $CODENAME in
+        focal)   VERSION=focal   ;;
+        jammy)   VERSION=jammy   ;;
+        kinetic) VERSION=kinetic ;;
+        lunar)   VERSION=lunar   ;;
+      esac
+    else
+      # Use jammy as default
+      VERSION=jammy
+    fi
+
+    else
     # Else use provided second argument
     VERSION=$2
+  fi
+  if [[ $INPUT = "" ]]; then
+    message fatal "No repo provided!"
   fi
   # get ppa: git-core/ppa
   PPA=$(echo "$INPUT" | cut -d ':' -f 2)
