@@ -324,7 +324,7 @@ add_private_repo() {
             tmppath=/tmp
             tmpfile=$tmppath/${REPO_NAME}-archive-keyring.gpg
             ${sudo} cp -rp $archive_keyring $tmpfile
-            message info "Converting keyfile..."
+            message recommend "Trying to convert keyfile..."
             case $(file "$tmpfile") in
               # ASCII armored (old)
               *'PGP public key block Public-Key (old)')
@@ -342,7 +342,7 @@ add_private_repo() {
                 ${sudo} cp -rp "$tmpfile" "$archive_keyring"
                 ;;
               *)
-                exit_error "invalid input keyfile format"
+                message fatal "invalid input keyfile format"
                 ;;
             esac
           fi
