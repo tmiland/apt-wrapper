@@ -485,7 +485,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     search|s)
       shift
-      ${sudo} "${apt}" search "$@"
+      "${apt}" search "$@"
       break
       ;;
     find|f)
