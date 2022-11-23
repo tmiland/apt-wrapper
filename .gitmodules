@@ -1,0 +1,3 @@
+[submodule "deb-get"]
+	path = deb-get
+	url = git@github.com:wimpysworld/deb-get.git
