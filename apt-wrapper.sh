@@ -205,6 +205,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}ppa-purge          ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
   printf "%s\\n" "  ${YELLOW}add-private-repo   ${NORMAL}|apr    ${GREEN}add private apt repo${NORMAL}"
   printf "%s\\n" "  ${YELLOW}app-install        ${NORMAL}|api    ${GREEN}add private apt repo for provided apps${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}deb-get            ${NORMAL}|dg     ${GREEN}manage apps with deb-get${NORMAL}"
   echo
   printf "%s\\n" "  Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
   echo
@@ -225,6 +226,7 @@ fi
 apt="apt"
 dpkg="dpkg"
 sudo="sudo"
+debget="./deb-get/deb-get"
 
 deb_download() {
   # Credit: deb-get 
@@ -560,6 +562,11 @@ while [[ $# -gt 0 ]]; do
     app-install|api)
       shift
       app_install "$@"
+      break
+      ;;
+    deb-get|dg)
+      shift
+      ${debget} "$@"
       break
       ;;
     help|-h|--help|-help)

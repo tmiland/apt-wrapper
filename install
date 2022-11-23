@@ -5,7 +5,7 @@ install_dir="${HOME}"/.apt-wrapper
 install() {
 	if [[ ! -d  ${install_dir} ]]; then
 		mkdir -p "${install_dir}"
-		git clone https://github.com/tmiland/apt-wrapper.git "${install_dir}"
+		git clone --recursive https://github.com/tmiland/apt-wrapper.git "${install_dir}"
 	fi
 	sudo ln -s "${install_dir}"/apt-wrapper.sh /usr/bin/apt-wrapper
 	chmod +x "${install_dir}"/apt-wrapper.sh

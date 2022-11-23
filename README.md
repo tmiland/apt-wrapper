@@ -10,7 +10,7 @@ A simple wrapper for apt with aliases
 
 Clone this repo:
 
-`git clone https://github.com/tmiland/apt-wrapper.git $HOME/Documents/GitHub/`
+`git clone --recursive https://github.com/tmiland/apt-wrapper.git $HOME/Documents/GitHub/`
 
 Symlink script:
 
@@ -59,7 +59,8 @@ Usage:  apt-wrapper [options]
   add-apt-repository |aar    add apt repo from ppa.launchpad.net
   ppa-purge          |ppp    purge apt repo from ppa.launchpad.net
   add-private-repo   |apr    add private apt repo
-  app-install        |api    add private apt repo for provided apps  
+  app-install        |api    add private apt repo for provided apps
+  deb-get            |dg     manage apps with deb-get  
 
   Script version: 1.0.0 | Enable apt progressbar with --progress-bar
 ```
@@ -199,6 +200,7 @@ Remove what was Added to .bashrc / .zshrc etc...
 - scolors [swelljoe/scolors](http://github.com/swelljoe/scolors)
 - PeterDaveHello/add-apt-ppa [PeterDaveHello/add-apt-ppa](https://github.com/PeterDaveHello/add-apt-ppa)
 - timothyvanderaerden/add-apt-repository [timothyvanderaerden/add-apt-repository](https://github.com/timothyvanderaerden/add-apt-repository)
+- deb-get [wimpysworld/deb-get](https://github.com/wimpysworld/deb-get) ([License - MIT](https://github.com/wimpysworld/deb-get/blob/main/LICENSE))
 
 ## Donations
 <a href="https://coindrop.to/tmiland" target="_blank"><img src="https://coindrop.to/embed-button.png" style="border-radius: 10px; height: 57px !important;width: 229px !important;" alt="Coindrop.to me"></img></a>
