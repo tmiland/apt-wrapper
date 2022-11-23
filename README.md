@@ -201,6 +201,7 @@ Remove what was Added to .bashrc / .zshrc etc...
 - PeterDaveHello/add-apt-ppa [PeterDaveHello/add-apt-ppa](https://github.com/PeterDaveHello/add-apt-ppa)
 - timothyvanderaerden/add-apt-repository [timothyvanderaerden/add-apt-repository](https://github.com/timothyvanderaerden/add-apt-repository)
 - deb-get [wimpysworld/deb-get](https://github.com/wimpysworld/deb-get) ([License - MIT](https://github.com/wimpysworld/deb-get/blob/main/LICENSE))
+- update git submodules [A small Bash script to update git submodules.](https://gist.github.com/gregkrsak/8812057)
 
 ## Donations
 <a href="https://coindrop.to/tmiland" target="_blank"><img src="https://coindrop.to/embed-button.png" style="border-radius: 10px; height: 57px !important;width: 229px !important;" alt="Coindrop.to me"></img></a>
