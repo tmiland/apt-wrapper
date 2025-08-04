@@ -155,11 +155,15 @@ case "${CODENAME}" in
     buster)   RELEASE="10";;
     bullseye) RELEASE="11";;
     bookworm) RELEASE="12";;
+    trixie)   RELEASE="13";;
     sid)      RELEASE="unstable";;
+    trusty)   RELEASE="14.04";;
+    xenial)   RELEASE="16.04";;
+    bionic)   RELEASE="18.04";;
     focal)    RELEASE="20.04";;
     jammy)    RELEASE="22.04";;
-    kinetic)  RELEASE="22.10";;
-    lunar)    RELEASE="23.04";;
+    noble)    RELEASE="24.04";;
+    plucky)   RELEASE="25.04";;
     *) message fatal "${OS_ID_PRETTY} ${OS_CODENAME^} is not supported because it is not derived from a supported Debian or Ubuntu release.";;
 esac
 
@@ -385,20 +389,20 @@ add-apt-repository() {
   if [ -z ${2+x} ]; then
     if [[ $ID == "debian" ]]; then
       case $CODENAME in
-        buster)       VERSION=jammy   ;;
-        bullseye)     VERSION=kinetic ;;
-        bookworm|sid) VERSION=lunar   ;;
+        buster)       VERSION=jammy ;;
+        bullseye)     VERSION=noble ;;
+        bookworm|trixie|sid) VERSION=plucky ;;
       esac
     elif [[ $ID == "ubuntu" ]]; then
       case $CODENAME in
-        focal)   VERSION=focal   ;;
-        jammy)   VERSION=jammy   ;;
-        kinetic) VERSION=kinetic ;;
-        lunar)   VERSION=lunar   ;;
+        focal)   VERSION=focal ;;
+        jammy)   VERSION=jammy ;;
+        noble)   VERSION=noble ;;
+        plucky)  VERSION=plucky ;;
       esac
     else
-      # Use jammy as default
-      VERSION=jammy
+      # Use noble as default
+      VERSION=noble
     fi
 
     else
