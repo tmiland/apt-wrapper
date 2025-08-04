@@ -7,8 +7,8 @@ install() {
 		mkdir -p "${install_dir}"
 		git clone --recursive https://github.com/tmiland/apt-wrapper.git "${install_dir}"
 	fi
-	sudo ln -s "${install_dir}"/apt-wrapper.sh /usr/bin/apt-wrapper
-	chmod +x "${install_dir}"/apt-wrapper.sh
+	sudo ln -s "${install_dir}"/apt_wrapper.sh /usr/bin/apt-wrapper
+	chmod +x "${install_dir}"/apt_wrapper.sh
 	if [ -n "$ZSH_VERSION" ]; then
 	  echo "source ${install_dir}/apt_wrapper_alias" >> "${HOME}"/.zshrc
 		source "${HOME}"/.zshrc

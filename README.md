@@ -14,7 +14,7 @@ Clone this repo:
 
 Symlink script:
 
-`sudo ln -s $HOME/Documents/GitHub/apt-wrapper/apt-wrapper.sh /usr/bin/apt-wrapper`
+`sudo ln -snf $HOME/Documents/GitHub/apt-wrapper/apt_wrapper.sh /usr/bin/apt-wrapper`
 
 Add to .bashrc / .zshrc etc...
 
@@ -56,6 +56,7 @@ Usage:  apt-wrapper [options]
   search             |s      search for available packages
   find               |f      package searching utility
   apt-mark           |am     set/unset settings for a package
+  pin                |pi     add pin settings for a package or repo
   add-apt-repository |aar    add apt repo from ppa.launchpad.net
   ppa-purge          |ppp    purge apt repo from ppa.launchpad.net
   add-private-repo   |apr    add private apt repo
