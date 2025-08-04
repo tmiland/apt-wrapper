@@ -211,7 +211,7 @@ Remove what was Added to .bashrc / .zshrc etc...
 
 Sign up for web hosting using this link, and receive $200 in credit over 60 days.
 
-<a href="https://www.digitalocean.com/?refcode=f1f2b475fca0&amp;utm_campaign=Referral_Invite&amp;utm_medium=Referral_Program&amp;utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg" alt="DigitalOcean Referral Badge"></a>
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=063f205296c5&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
 #### Disclaimer 
 
