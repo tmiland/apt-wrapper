@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2086,SC2181
+
 ## Author: Tommy Miland (@tmiland) - Copyright (c) 2025
 
-VERSION='1.0.9'
+
+######################################################################
+####                      Apt Wrapper.sh                          ####
+####            A simple wrapper for apt with aliases             ####
+####                   Maintained by @tmiland                     ####
+######################################################################
+
+
+VERSION='1.1.0'
 
 #------------------------------------------------------------------------------#
 #
@@ -390,25 +399,25 @@ add-apt-repository() {
   if [ -z ${2+x} ]; then
     if [[ $ID == "debian" ]]; then
       case $CODENAME in
-        buster)       VERSION='1.0.9'
-        bullseye)     VERSION='1.0.9'
-        bookworm|trixie|sid) VERSION='1.0.9'
+        buster)       VERSION=jammy ;;
+        bullseye)     VERSION=noble ;;
+        bookworm|trixie|sid) VERSION=plucky ;;
       esac
     elif [[ $ID == "ubuntu" ]]; then
       case $CODENAME in
-        focal)   VERSION='1.0.9'
-        jammy)   VERSION='1.0.9'
-        noble)   VERSION='1.0.9'
-        plucky)  VERSION='1.0.9'
+        focal)   VERSION=focal ;;
+        jammy)   VERSION=jammy ;;
+        noble)   VERSION=noble ;;
+        plucky)  VERSION=plucky ;;
       esac
     else
       # Use noble as default
-      VERSION='1.0.9'
+      VERSION=noble
     fi
 
     else
     # Else use provided second argument
-    VERSION='1.0.9'
+    VERSION=$2
   fi
   if [[ $INPUT = "" ]]; then
     message fatal "No repo provided!"
