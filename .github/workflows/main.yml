@@ -22,4 +22,4 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            apt-wrapper.sh
+            apt_wrapper.sh
