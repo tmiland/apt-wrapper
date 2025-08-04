@@ -75,12 +75,12 @@ MESSAGE_TYPE="${1}"
 MESSAGE="${2}"
 
 case ${MESSAGE_TYPE} in
-  info)     echo -e "  [${GREEN}+${NORMAL}] ${MESSAGE}";;
-  progress) echo -en "  [${GREEN}+${NORMAL}] ${MESSAGE}";;
-  recommend)echo -e "  [${CYAN}!${NORMAL}] ${MESSAGE}";;
-  warn)     echo -e "  [${YELLOW}*${NORMAL}] WARNING! ${MESSAGE}";;
-  error)    echo -e "  [${RED}!${NORMAL}] ERROR! ${MESSAGE}" >&2;;
-  fatal)    echo -e "  [${RED}!${NORMAL}] ERROR! ${MESSAGE}" >&2
+  info)     echo -e "  [${GREEN}INFO:${NORMAL}] ${MESSAGE}";;
+  progress) echo -en "  [${GREEN}PROGRESS:${NORMAL}] ${MESSAGE}";;
+  recommend)echo -e "  [${CYAN}RECOMMENDATION:${NORMAL}] ${MESSAGE}";;
+  warn)     echo -e "  [${YELLOW}WARNING!${NORMAL}] ${MESSAGE}";;
+  error)    echo -e "  [${RED}ERROR!${NORMAL}] ${MESSAGE}" >&2;;
+  fatal)    echo -e "  [${RED}ERROR!${NORMAL}] ${MESSAGE}" >&2
     exit 1;;
   *) echo -e "  [?] UNKNOWN: ${MESSAGE}";;
 esac
@@ -205,6 +205,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}search             ${NORMAL}|s      ${GREEN}search for available packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}find               ${NORMAL}|f      ${GREEN}package searching utility${NORMAL}"
   printf "%s\\n" "  ${YELLOW}apt-mark           ${NORMAL}|am     ${GREEN}set/unset settings for a package${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}pin                ${NORMAL}|pi     ${GREEN}add pin settings for a package or repo${NORMAL}"
   printf "%s\\n" "  ${YELLOW}add-apt-repository ${NORMAL}|aar    ${GREEN}add apt repo from ppa.launchpad.net${NORMAL}"
   printf "%s\\n" "  ${YELLOW}ppa-purge          ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
   printf "%s\\n" "  ${YELLOW}add-private-repo   ${NORMAL}|apr    ${GREEN}add private apt repo${NORMAL}"
@@ -457,6 +458,104 @@ ppa_purge() {
   fi
 }
 
+apt_pin() {
+  case $1 in
+    add-repo)
+      shift
+      repo_name=${repo_name:-deb-tmiland-com}
+      repo_pin=${repo_pin:-origin deb.tmiland.com}
+      repo_priority=${repo_priority:-600}
+      read -rep "  Enter repo name: " -i $repo_name repo_name
+      cat <<EOF
+
+  Options for pinning are:
+
+      ${GREEN}From a repo:${NORMAL} ${YELLOW}origin deb.tmiland.com${NORMAL}
+      ${GREEN}From repository name:${NORMAL} ${YELLOW}release o=deb.tmiland.com${NORMAL}
+      
+    ${GREEN}Visit for more information:${NORMAL} ${YELLOW}https://wiki.debian.org/AptConfiguration${NORMAL}
+
+EOF
+      read -rep "  Enter repo pin: " -i "$repo_pin" repo_pin
+      read -rep "  Enter repo priority: " -i $repo_priority repo_priority
+      ${sudo} tee "/etc/apt/preferences.d/$repo_name" > /dev/null <<EOF
+Package: *
+Pin: $repo_pin
+Pin-Priority: $repo_priority
+EOF
+      if [ $? -eq 0 ]
+      then
+        message info "SUCCESS! The file /etc/apt/preferences.d/$repo_name has been created."
+        message recommend "Run apt upd to update apt package manager."
+      else
+        message error "Something went wrong!"
+      fi
+    ;;
+    add-package)
+      shift
+      package_name=${package_name:-package_name}
+      package_pin=${package_pin:-release a=bookworm-backports}
+      package_priority=${package_priority:-500}
+      read -rep "  Enter package name: " -i $package_name package_name
+      cat <<EOF
+
+  Options for pinning are:
+
+      ${GREEN}From a repo:${NORMAL} ${YELLOW}origin deb.debian.org${NORMAL}
+      ${GREEN}From a release:${NORMAL} ${YELLOW}release a=bookworm-backports${NORMAL}
+      ${GREEN}From repository name:${NORMAL} ${YELLOW}release o=my-custom-repo-name${NORMAL}
+      
+    ${GREEN}Visit for more information:${NORMAL} ${YELLOW}https://wiki.debian.org/AptConfiguration${NORMAL}
+
+EOF
+      read -rep "  Enter package pin: " -i "$package_pin" package_pin
+      read -rep "  Enter package priority: " -i $package_priority package_priority
+      ${sudo} tee "/etc/apt/preferences.d/$package_name" > /dev/null <<EOF
+Package: $package_name
+Pin: $package_pin
+Pin-Priority: $package_priority
+EOF
+      if [ $? -eq 0 ]
+      then
+        message info "SUCCESS! The file /etc/apt/preferences.d/$package_name has been created."
+        message recommend "Run apt upd to update apt package manager."
+      else
+        message error "Something went wrong!"
+      fi
+    ;;
+    edit)
+      shift
+      read -rp "  Enter package or repo name: " package_or_repo_name
+      ${sudo} $EDITOR /etc/apt/preferences.d/$package_or_repo_name
+      if [ $? -eq 0 ]
+      then
+        message info "SUCCESS! The file /etc/apt/preferences.d/$package_or_repo_name has been saved."
+        message recommend "Run apt upd to update apt package manager."
+      else
+        message error "Something went wrong!"
+      fi
+      exit 0
+    ;;
+    remove)
+      shift
+      read -rp "  Enter package or repo name: " package_or_repo_name
+      ${sudo} rm /etc/apt/preferences.d/$package_or_repo_name
+      if [ $? -eq 0 ]
+      then
+        message info "SUCCESS! The file /etc/apt/preferences.d/$package_or_repo_name has been deleted."
+        message recommend "Run apt upd to update apt package manager."
+      else
+        message error "Something went wrong!"
+      fi
+      exit 0
+    ;;
+    *)
+        message info "Options are: add-repo,add-package, edit or remove."
+      exit 0
+    ;;
+  esac
+}
+
 while [[ $# -gt 0 ]]; do
   case $1 in
     install|i)
@@ -546,6 +645,11 @@ while [[ $# -gt 0 ]]; do
     apt-mark|am)
       shift
       ${sudo} "${apt}" apt-mark "$@"
+      break
+      ;;
+    pin|pi)
+      shift
+      apt_pin "$@"
       break
       ;;
     add-apt-repository|aar)
