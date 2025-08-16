@@ -211,6 +211,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}policy             ${NORMAL}|pol    ${GREEN}displays information about the package(s)${NORMAL}"
   printf "%s\\n" "  ${YELLOW}list               ${NORMAL}|l      ${GREEN}display a list of packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}edit-sources       ${NORMAL}|es     ${GREEN}lets you edit your sources.list${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}modernize-sources  ${NORMAL}|ms     ${GREEN}modernize your sources.list to new deb822 format${NORMAL}"
   printf "%s\\n" "  ${YELLOW}search             ${NORMAL}|s      ${GREEN}search for available packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}find               ${NORMAL}|f      ${GREEN}package searching utility${NORMAL}"
   printf "%s\\n" "  ${YELLOW}apt-mark           ${NORMAL}|am     ${GREEN}set/unset settings for a package${NORMAL}"
@@ -650,6 +651,10 @@ while [[ $# -gt 0 ]]; do
       shift
       ${sudo} "${apt}" edit-sources "$@"
       break
+      ;;
+    modernize-sources|ms)
+      shift
+      ${sudo} "${apt}" modernize-sources
       ;;
     apt-mark|am)
       shift
