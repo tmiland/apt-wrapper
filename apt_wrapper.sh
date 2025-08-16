@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2086,SC2181
+# shellcheck disable=SC2086,SC2181,SC2068
 
 ## Author: Tommy Miland (@tmiland) - Copyright (c) 2025
 
@@ -194,35 +194,42 @@ help() {
   echo
   echo "  If called without arguments, shows help."
   echo
-  printf "%s\\n" "  ${YELLOW}help               ${NORMAL}|h      ${GREEN}display this help and exit${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}update             ${NORMAL}|up     ${GREEN}update package information${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}upgrade            ${NORMAL}|upg    ${GREEN}upgrade available packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}full-upgrade       ${NORMAL}|fupg   ${GREEN}full-upgrade. See: man apt(8)${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}install            ${NORMAL}|i      ${GREEN}install one or more packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}deb-install        ${NORMAL}|di     ${GREEN}install local or remote deb package${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}download           ${NORMAL}|dl     ${GREEN}download deb package from repo${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}reinstall          ${NORMAL}|ri     ${GREEN}reinstall one or more packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}remove             ${NORMAL}|r      ${GREEN}remove one or more packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}purge              ${NORMAL}|p      ${GREEN}purge one or more packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}autoremove         ${NORMAL}|ar     ${GREEN}clean up unused dependencies${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}autoclean          ${NORMAL}|ac     ${GREEN}clears out the local repository${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}clean              ${NORMAL}|c      ${GREEN}clears out the local repository${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}show               ${NORMAL}|sh     ${GREEN}Show information about package(s)${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}policy             ${NORMAL}|pol    ${GREEN}displays information about the package(s)${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}list               ${NORMAL}|l      ${GREEN}display a list of packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}edit-sources       ${NORMAL}|es     ${GREEN}lets you edit your sources.list${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}modernize-sources  ${NORMAL}|ms     ${GREEN}modernize your sources.list to new deb822 format${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}search             ${NORMAL}|s      ${GREEN}search for available packages${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}find               ${NORMAL}|f      ${GREEN}package searching utility${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}apt-mark           ${NORMAL}|am     ${GREEN}set/unset settings for a package${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}pin                ${NORMAL}|pi     ${GREEN}add pin settings for a package or repo${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}add-apt-repository ${NORMAL}|aar    ${GREEN}add apt repo from ppa.launchpad.net${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}ppa-purge          ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}add-private-repo   ${NORMAL}|apr    ${GREEN}add private apt repo${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}app-install        ${NORMAL}|api    ${GREEN}add private apt repo for provided apps${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}deb-get            ${NORMAL}|dg     ${GREEN}manage apps with deb-get${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}help                   ${NORMAL}|h      ${GREEN}display this help and exit${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}update                 ${NORMAL}|up     ${GREEN}update package information${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}upgrade                ${NORMAL}|upg    ${GREEN}upgrade available packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}full-upgrade           ${NORMAL}|fupg   ${GREEN}full-upgrade. See: man apt(8)${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}install                ${NORMAL}|i      ${GREEN}install one or more packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}deb-install            ${NORMAL}|di     ${GREEN}install local or remote deb package${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}download               ${NORMAL}|dl     ${GREEN}download deb package from repo${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}reinstall              ${NORMAL}|ri     ${GREEN}reinstall one or more packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}remove                 ${NORMAL}|r      ${GREEN}remove one or more packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}purge                  ${NORMAL}|p      ${GREEN}purge one or more packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}autoremove             ${NORMAL}|ar     ${GREEN}clean up unused dependencies${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}autoclean              ${NORMAL}|ac     ${GREEN}clears out the local repository${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}clean                  ${NORMAL}|c      ${GREEN}clears out the local repository${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}show                   ${NORMAL}|sh     ${GREEN}Show information about package(s)${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}policy                 ${NORMAL}|pol    ${GREEN}displays information about the package(s)${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}list                   ${NORMAL}|l      ${GREEN}display a list of packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}edit-sources           ${NORMAL}|es     ${GREEN}lets you edit your sources.list${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}modernize-sources      ${NORMAL}|ms     ${GREEN}modernize your sources.list to new deb822 format${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}enable-disable-sources ${NORMAL}|eds    ${GREEN}enable or disable a sources file. *${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}search                 ${NORMAL}|s      ${GREEN}search for available packages${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}find                   ${NORMAL}|f      ${GREEN}package searching utility${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}apt-mark               ${NORMAL}|am     ${GREEN}set/unset settings for a package${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}pin                    ${NORMAL}|pi     ${GREEN}add pin settings for a package or repo${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}add-apt-repository     ${NORMAL}|aar    ${GREEN}add apt repo from ppa.launchpad.net${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}ppa-purge              ${NORMAL}|ppp    ${GREEN}purge apt repo from ppa.launchpad.net${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}add-private-repo       ${NORMAL}|apr    ${GREEN}add private apt repo${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}app-install            ${NORMAL}|api    ${GREEN}add private apt repo for provided apps${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}deb-get                ${NORMAL}|dg     ${GREEN}manage apps with deb-get${NORMAL}"
   echo
-  printf "%s\\n" "  Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
+  cat <<EOF
+* Arguments for ${YELLOW}enable-disable-sources${NORMAL}: ${GREEN}enable, disable or move.${NORMAL}
+  move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.list,
+  and symlinks the file from /etc/apt/sources.list to /etc/apt/sources.list.d.
+EOF
+  echo
+  printf "%s\\n" "Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
   echo
 }
 
@@ -566,6 +573,84 @@ EOF
   esac
 }
 
+enable_disable_sources() {
+  sources_dir=/etc/apt/sources.list
+  sources_enabled_dir=/etc/apt/sources.list.d
+
+  case "$1" in
+    enable)
+    if [[ -d "$sources_dir" ]]
+    then
+      sources_file_array=$(ls "$sources_dir")
+      sources_file=($sources_file_array)
+      read -rp "$(
+            f=0
+            for l in ${sources_file[@]}
+            do
+              echo "$((++f)): $l"
+            done
+            echo -ne "Please select a sources file you wish to enable: "
+      )" selection
+      selected_sources_file="${sources_file[$((selection-1))]}"
+      message info "You selected $selected_sources_file"
+      
+      if [[ -d "$sources_dir" && -f "$sources_dir/$selected_sources_file" ]]
+      then
+        message info "Enabling selected $selected_sources_file"
+        ${sudo} ln -snf $sources_dir/$selected_sources_file $sources_enabled_dir/$selected_sources_file || echo "ERROR! Unable to symlink $selected_sources_file"
+        message info "Done! $selected_sources_file has been symlinked in $sources_enabled_dir."
+      else
+        message fatal "$sources_dir or $selected_sources_file does not exist..."
+      fi
+    else
+      message fatal "$sources_dir does not exist..."
+    fi
+    ;;
+    disable)
+    if [[ -d "$sources_dir" ]]
+    then
+      sources_file_array=$(ls "$sources_enabled_dir")
+      sources_file=($sources_file_array)
+      read -rp "$(
+            f=0
+            for l in ${sources_file[@]}
+            do
+              echo "$((++f)): $l"
+            done
+            echo -ne "Please select a sources file you wish to disable: "
+      )" selection
+      selected_sources_file="${sources_file[$((selection-1))]}"
+      message info "You selected $selected_sources_file"
+      
+      if [[ -d "$sources_enabled_dir" && -f "$sources_enabled_dir/$selected_sources_file" ]]
+      then
+        message info "Disabling selected $selected_sources_file"
+        ${sudo} rm -rf $sources_enabled_dir/$selected_sources_file || echo "ERROR! Unable to delete symlink $selected_sources_file"
+        message info "Done! $selected_sources_file has been deleted from $sources_enabled_dir."
+      else
+        message fatal "$sources_enabled_dir or $selected_sources_file does not exist..."
+      fi
+    else
+      message fatal "$sources_enabled_dir does not exist..."
+    fi
+    ;;
+    move)
+    if ! [[ -d $sources_dir ]]
+    then
+      ${sudo} mkdir -p $sources_dir
+      ${sudo} mv $sources_enabled_dir/* $sources_dir/*
+    else
+      message fatal "Looks like $sources_dir has been created and files moved already..."
+      exit 0
+    fi
+    ;;
+    *)
+      help
+      exit 1
+    ;;
+  esac
+}
+
 while [[ $# -gt 0 ]]; do
   case $1 in
     install|i)
@@ -655,6 +740,11 @@ while [[ $# -gt 0 ]]; do
     modernize-sources|ms)
       shift
       ${sudo} "${apt}" modernize-sources
+      ;;
+    enable-disable-sources|eds)
+      shift
+      enable_disable_sources "$@"
+      break
       ;;
     apt-mark|am)
       shift
