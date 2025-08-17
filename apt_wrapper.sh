@@ -211,7 +211,7 @@ help() {
   printf "%s\\n" "  ${YELLOW}policy                 ${NORMAL}|pol    ${GREEN}displays information about the package(s)${NORMAL}"
   printf "%s\\n" "  ${YELLOW}list                   ${NORMAL}|l      ${GREEN}display a list of packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}edit-sources           ${NORMAL}|es     ${GREEN}lets you edit your sources.list${NORMAL}"
-  printf "%s\\n" "  ${YELLOW}modernize-sources      ${NORMAL}|ms     ${GREEN}modernize your sources.list to new deb822 format${NORMAL}"
+  printf "%s\\n" "  ${YELLOW}modernize-sources      ${NORMAL}|ms     ${GREEN}modernize your sources.list to new deb822 format**${NORMAL}"
   printf "%s\\n" "  ${YELLOW}enable-disable-sources ${NORMAL}|eds    ${GREEN}enable or disable a sources file. *${NORMAL}"
   printf "%s\\n" "  ${YELLOW}search                 ${NORMAL}|s      ${GREEN}search for available packages${NORMAL}"
   printf "%s\\n" "  ${YELLOW}find                   ${NORMAL}|f      ${GREEN}package searching utility${NORMAL}"
@@ -224,10 +224,11 @@ help() {
   printf "%s\\n" "  ${YELLOW}deb-get                ${NORMAL}|dg     ${GREEN}manage apps with deb-get${NORMAL}"
   echo
   cat <<EOF
-* Arguments for ${YELLOW}enable-disable-sources${NORMAL}: ${GREEN}enable, disable or move.${NORMAL}
-  move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.list.disabled. (first time only)
-  enable, moves the selected sources file back to /etc/apt/sources.list.d.
-  disable, moves the selected sources file /etc/apt/sources.list.disabled.
+  *  Arguments for ${YELLOW}enable-disable-sources${NORMAL}: ${GREEN}enable, disable or move.${NORMAL}
+     move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.list.disabled. (first time only)
+     enable, moves the selected sources file back to /etc/apt/sources.list.d.
+     disable, moves the selected sources file /etc/apt/sources.list.disabled.
+  ** Modernizing sources supported for apt > 2.9.26.
 EOF
   echo
   printf "%s\\n" "Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
