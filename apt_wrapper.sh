@@ -677,10 +677,10 @@ modernize_sources() {
   ${sudo} "${apt}" modernize-sources || message fatal "Something went wrong..."
   if ! [ -d /etc/apt/sources.list.old  ]; then
     ${sudo} mkdir -p /etc/apt/sources.list.old || message fatal "Something went wrong..."
+  fi
     message info "Moving old files to /etc/apt/sources.list.old"
     ${sudo} mv /etc/apt/sources.list.d/*.list.bak /etc/apt/sources.list.old/ || message fatal "Something went wrong..."
     message info "Done."
-  fi
   else
     message warning "apt is older than 2.9.26"
     exit 1
