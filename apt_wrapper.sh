@@ -377,7 +377,7 @@ add_private_repo() {
           fi
           echo "$REPO_LINE" | ${sudo} tee $archive_list &> /dev/null
           ${sudo} sed -i "s|signed-by=/.*.gpg|signed-by=$archive_keyring|g" $archive_list
-          if [[ "${CODENAME}" == "trixie" ]]
+          if [[ $(apt -v | sed -n 's/[^0-9.]*\([0-9.]*\).*/\1/p') > "2.9.26" ]]
           then
             archive_sources=/etc/apt/sources.list.d/$REPO_NAME.sources
             message info "Modernizing sources file..."
