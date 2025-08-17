@@ -225,8 +225,8 @@ help() {
   echo
   cat <<EOF
 * Arguments for ${YELLOW}enable-disable-sources${NORMAL}: ${GREEN}enable, disable or move.${NORMAL}
-  move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.list,
-  and symlinks the file from /etc/apt/sources.list to /etc/apt/sources.list.d.
+  move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.lists,
+  and symlinks the file from /etc/apt/sources.lists to /etc/apt/sources.list.d.
 EOF
   echo
   printf "%s\\n" "Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
@@ -338,7 +338,7 @@ add_private_repo() {
           read -n1 -r -p "Repo is ready to be installed, press any key to continue, or ctrl+c to cancel..."
           echo ""
           archive_list=/etc/apt/sources.list.d/$REPO_NAME.list
-          archive_keyring="/usr/share/keyrings/${REPO_NAME}-archive-keyring.gpg"
+          archive_keyring="/etc/apt/keyrings/${REPO_NAME}-archive-keyring.gpg"
           wget -qO - $GPG_LINK | gpg --dearmor | ${sudo} tee $archive_keyring > /dev/null
           # Check if keyfile is the right type
           keyfiletype=$(file "$archive_keyring" | grep -c 'OpenPGP Public Key Version 4\|PGP/GPG key public ring (v4)')
@@ -374,13 +374,31 @@ add_private_repo() {
             message warn "${REPO_NAME}-archive-keyring.gpg does not exist..."
             message fatal "Something went wrong!"
           fi
-          echo "$REPO_LINE" | ${sudo} tee $archive_list
-          if [[ ! -f $archive_list ]]; then
-            message warn "$archive_list does not exist..."
-            message fatal "Something went wrong!"
+          echo "$REPO_LINE" | ${sudo} tee $archive_list &> /dev/null
+          ${sudo} sed -i "s|signed-by=/.*.gpg|signed-by=$archive_keyring|g" $archive_list
+          if [[ "${CODENAME}" == "trixie" ]]
+          then
+            archive_sources=/etc/apt/sources.list.d/$REPO_NAME.sources
+            message info "Modernizing sources file..."
+            if ! [ -d /etc/apt/sources.list.old  ]; then
+              ${sudo} mkdir -p /etc/apt/sources.list.old
+            fi
+            ${sudo} "${apt}" modernize-sources -o Dir::Etc::sourcelist="$archive_list" -y &> /dev/null
+            ${sudo} mv /etc/apt/sources.list.d/moved-from-main.sources $archive_sources &> /dev/null
+            ${sudo} mv /etc/apt/sources.list.d/${REPO_NAME}.list.bak /etc/apt/sources.list.old/${REPO_NAME}.list.bak &> /dev/null
+            ${sudo} chmod 644 $archive_sources
+            message info "Done."
+            if [[ ! -f $archive_sources ]]; then
+              message warn "$archive_sources does not exist..."
+              message fatal "Something went wrong!"
+            fi
+          else
+            if [[ ! -f $archive_list ]]; then
+              message warn "$archive_list does not exist..."
+              message fatal "Something went wrong!"
+            fi
           fi
           ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$archive_list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" &> /dev/null
-          #success message
           if [ -n "$archive_keyring" ]; then
             echo ""
             message info "Key added to $archive_keyring"
@@ -438,7 +456,11 @@ add-apt-repository() {
   TEMP_DIR=$(mktemp -d)
   TEMP_KEY=$TEMP_DIR/archive_keyring
   # Create source list file
-  file=/etc/apt/sources.list.d/$SOFTWARE.list
+  if [ -d /etc/apt/sources.lists ]; then
+    file=/etc/apt/sources.lists/$SOFTWARE.list
+  else
+    file=/etc/apt/sources.list.d/$SOFTWARE.list
+  fi
   archive_keyring="/usr/share/keyrings/${SOFTWARE}-archive-keyring.gpg"
   ${sudo} touch "$file"
   echo "deb [signed-by=$archive_keyring] $URL
@@ -574,7 +596,7 @@ EOF
 }
 
 enable_disable_sources() {
-  sources_dir=/etc/apt/sources.list
+  sources_dir=/etc/apt/sources.lists
   sources_enabled_dir=/etc/apt/sources.list.d
 
   case "$1" in
