@@ -670,6 +670,22 @@ enable_disable_sources() {
   esac
 }
 
+modernize_sources() {
+  if [[ $(apt -v | sed -n 's/[^0-9.]*\([0-9.]*\).*/\1/p') > "2.9.26" ]]
+  then
+  ${sudo} "${apt}" modernize-sources || message fatal "Something went wrong..."
+  if ! [ -d /etc/apt/sources.list.old  ]; then
+    ${sudo} mkdir -p /etc/apt/sources.list.old || message fatal "Something went wrong..."
+    message info "Moving old files to /etc/apt/sources.list.old"
+    ${sudo} mv /etc/apt/sources.list.d/*.list.bak /etc/apt/sources.list.old/ || message fatal "Something went wrong..."
+    message info "Done."
+  fi
+  else
+    message warning "apt is older than 2.9.26"
+    exit 1
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case $1 in
     install|i)
@@ -758,7 +774,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     modernize-sources|ms)
       shift
-      ${sudo} "${apt}" modernize-sources
+      modernize_sources
       ;;
     enable-disable-sources|eds)
       shift
