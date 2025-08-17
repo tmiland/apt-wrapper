@@ -225,8 +225,9 @@ help() {
   echo
   cat <<EOF
 * Arguments for ${YELLOW}enable-disable-sources${NORMAL}: ${GREEN}enable, disable or move.${NORMAL}
-  move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.lists,
-  and symlinks the file from /etc/apt/sources.lists to /etc/apt/sources.list.d.
+  move, moves all sources files from /etc/apt/sources.list.d to /etc/apt/sources.list.disabled. (first time only)
+  enable, moves the selected sources file back to /etc/apt/sources.list.d.
+  disable, moves the selected sources file /etc/apt/sources.list.disabled.
 EOF
   echo
   printf "%s\\n" "Script version: ${CYAN}${VERSION}${NORMAL} | Enable apt progressbar with --progress-bar"
@@ -456,11 +457,7 @@ add-apt-repository() {
   TEMP_DIR=$(mktemp -d)
   TEMP_KEY=$TEMP_DIR/archive_keyring
   # Create source list file
-  if [ -d /etc/apt/sources.lists ]; then
-    file=/etc/apt/sources.lists/$SOFTWARE.list
-  else
-    file=/etc/apt/sources.list.d/$SOFTWARE.list
-  fi
+  file=/etc/apt/sources.list.d/$SOFTWARE.list
   archive_keyring="/usr/share/keyrings/${SOFTWARE}-archive-keyring.gpg"
   ${sudo} touch "$file"
   echo "deb [signed-by=$archive_keyring] $URL
@@ -596,14 +593,14 @@ EOF
 }
 
 enable_disable_sources() {
-  sources_dir=/etc/apt/sources.lists
+  sources_disabled_dir=/etc/apt/sources.list.disabled
   sources_enabled_dir=/etc/apt/sources.list.d
 
   case "$1" in
     enable)
-    if [[ -d "$sources_dir" ]]
+    if [[ -d "$sources_disabled_dir" ]]
     then
-      sources_file_array=$(ls "$sources_dir")
+      sources_file_array=$(ls "$sources_disabled_dir")
       sources_file=($sources_file_array)
       read -rp "$(
             f=0
@@ -616,20 +613,20 @@ enable_disable_sources() {
       selected_sources_file="${sources_file[$((selection-1))]}"
       message info "You selected $selected_sources_file"
       
-      if [[ -d "$sources_dir" && -f "$sources_dir/$selected_sources_file" ]]
+      if [[ -d "$sources_disabled_dir" && -f "$sources_disabled_dir/$selected_sources_file" ]]
       then
         message info "Enabling selected $selected_sources_file"
-        ${sudo} ln -snf $sources_dir/$selected_sources_file $sources_enabled_dir/$selected_sources_file || echo "ERROR! Unable to symlink $selected_sources_file"
-        message info "Done! $selected_sources_file has been symlinked in $sources_enabled_dir."
+        ${sudo} mv $sources_disabled_dir/$selected_sources_file $sources_enabled_dir/$selected_sources_file || echo "ERROR! Unable to enable $selected_sources_file"
+        message info "Done! $selected_sources_file has been moved to $sources_enabled_dir."
       else
-        message fatal "$sources_dir or $selected_sources_file does not exist..."
+        message fatal "$sources_disabled_dir or $selected_sources_file does not exist..."
       fi
     else
-      message fatal "$sources_dir does not exist..."
+      message fatal "$sources_disabled_dir does not exist..."
     fi
     ;;
     disable)
-    if [[ -d "$sources_dir" ]]
+    if [[ -d "$sources_disabled_dir" ]]
     then
       sources_file_array=$(ls "$sources_enabled_dir")
       sources_file=($sources_file_array)
@@ -647,8 +644,8 @@ enable_disable_sources() {
       if [[ -d "$sources_enabled_dir" && -f "$sources_enabled_dir/$selected_sources_file" ]]
       then
         message info "Disabling selected $selected_sources_file"
-        ${sudo} rm -rf $sources_enabled_dir/$selected_sources_file || echo "ERROR! Unable to delete symlink $selected_sources_file"
-        message info "Done! $selected_sources_file has been deleted from $sources_enabled_dir."
+        ${sudo} mv $sources_enabled_dir/$selected_sources_file $sources_disabled_dir/$selected_sources_file || echo "ERROR! Unable to disable $selected_sources_file"
+        message info "Done! $selected_sources_file has been moved from $sources_enabled_dir to $sources_disabled_dir."
       else
         message fatal "$sources_enabled_dir or $selected_sources_file does not exist..."
       fi
@@ -657,12 +654,12 @@ enable_disable_sources() {
     fi
     ;;
     move)
-    if ! [[ -d $sources_dir ]]
+    if ! [[ -d $sources_disabled_dir ]]
     then
-      ${sudo} mkdir -p $sources_dir
-      ${sudo} mv $sources_enabled_dir/* $sources_dir/*
+      ${sudo} mkdir -p $sources_disabled_dir
+      ${sudo} mv $sources_enabled_dir/* $sources_disabled_dir/*
     else
-      message fatal "Looks like $sources_dir has been created and files moved already..."
+      message fatal "Looks like $sources_disabled_dir has been created and files moved already..."
       exit 0
     fi
     ;;
