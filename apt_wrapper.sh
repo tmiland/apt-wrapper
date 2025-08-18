@@ -413,7 +413,8 @@ add_private_repo() {
           exit 1
         ;;
         [Nn]* )
-          break ;;
+          break
+        ;;
     esac
   done
 }
@@ -461,12 +462,19 @@ add-apt-repository() {
   file=/etc/apt/sources.list.d/$SOFTWARE.list
   archive_keyring="/usr/share/keyrings/${SOFTWARE}-archive-keyring.gpg"
   ${sudo} touch "$file"
-  echo "deb [signed-by=$archive_keyring] $URL
-# deb-src $URL" | ${sudo} tee "$file" >/dev/null
+  # Dont add signed-by= yet, as apt will only display missing key without.
+  echo "deb $URL
+  # deb-src $URL" | ${sudo} tee "$file" >/dev/null
   # Add key
   # Here we run apt update on the added repo only to get the missing key (for faster update)
-  ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$file" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" >> /dev/null 2> $TEMP_KEY
-  KEY=$(cat $TEMP_KEY | cut -d ':' -f 6 | cut -d ' ' -f 3)
+  # apt output is different in debian 13
+  if [[ $CODENAME == "trixie" ]]; then
+    ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$file" >> /dev/null 2> $TEMP_KEY
+    KEY=$(cat $TEMP_KEY | awk -F'Missing key' '{print $2}' | sed "s|,.*||g" | tr -d '\n' | sed "s/^[t ]*//g")
+  else
+    ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$file" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" >> /dev/null 2> $TEMP_KEY
+    KEY=$(cat $TEMP_KEY | cut -d ':' -f 6 | cut -d ' ' -f 3)
+  fi
   # Here we're importing the key from keyserver, exporting to file, dearmoring and deleting when done.
   # Credit: https://github.com/Ulauncher/Ulauncher/issues/972#issuecomment-1034751651
   ${sudo} gpg --keyserver keyserver.ubuntu.com --recv $KEY &> /dev/null
@@ -475,6 +483,8 @@ add-apt-repository() {
   ${sudo} gpg --batch --yes --delete-key $KEY &> /dev/null
   $sudo chmod 644 $archive_keyring &> /dev/null
   ${sudo} rm -rf $TEMP_DIR &> /dev/null
+  # Now we can add signed-by=
+  ${sudo} sed -i "s|deb $URL|deb [signed-by=$archive_keyring] $URL|g" $archive_list
   # Update repo once more
   ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$file" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" &> /dev/null
   #success message
