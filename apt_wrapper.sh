@@ -498,11 +498,25 @@ add-apt-repository() {
 }
 
 ppa_purge() {
-  if dpkg -s ppa-purge &>/dev/null; then
-    ${sudo} ppa-purge "$@"
-  else
-    message fatal "ppa-purge is not installed"
+  INPUT=$1
+  if [[ $INPUT = "" ]]; then
+    message fatal "No repo provided!"
   fi
+  # get ppa: git-core/ppa
+  PPA=$(echo "$INPUT" | cut -d ':' -f 2)
+  # Cuts down to: git-core
+  SOFTWARE=$(echo "$PPA" | cut -d '/' -f 1)
+  # Delete source list file
+  if [ -f /etc/apt/sources.list.d/$SOFTWARE.list ]; then
+    file=/etc/apt/sources.list.d/$SOFTWARE.list
+  elif [ -f /etc/apt/sources.list.d/$SOFTWARE.sources ]; then
+    file=/etc/apt/sources.list.d/$SOFTWARE.sources
+  fi
+  archive_keyring="/usr/share/keyrings/${SOFTWARE}-archive-keyring.gpg"
+  message info "Purging $PPA..."
+  ${sudo} rm $file &> /dev/null || message fatal "Unable to purge $PPA file $file."
+  ${sudo} rm $archive_keyring &> /dev/null || message fatal "Unable to purge $PPA archive keyring $archive_keyring."
+  message info "Done."
 }
 
 apt_pin() {
