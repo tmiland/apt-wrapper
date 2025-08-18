@@ -459,20 +459,20 @@ add-apt-repository() {
   TEMP_DIR=$(mktemp -d)
   TEMP_KEY=$TEMP_DIR/archive_keyring
   # Create source list file
-  file=/etc/apt/sources.list.d/$SOFTWARE.list
+  archive_list=/etc/apt/sources.list.d/$SOFTWARE.list
   archive_keyring="/usr/share/keyrings/${SOFTWARE}-archive-keyring.gpg"
-  ${sudo} touch "$file"
+  ${sudo} touch "$archive_list"
   # Dont add signed-by= yet, as apt will only display missing key without.
   echo "deb $URL
-  # deb-src $URL" | ${sudo} tee "$file" >/dev/null
+  # deb-src $URL" | ${sudo} tee "$archive_list" >/dev/null
   # Add key
   # Here we run apt update on the added repo only to get the missing key (for faster update)
   # apt output is different in debian 13
   if [[ $CODENAME == "trixie" ]]; then
-    ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$file" >> /dev/null 2> $TEMP_KEY
+    ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$archive_list" >> /dev/null 2> $TEMP_KEY
     KEY=$(cat $TEMP_KEY | awk -F'Missing key' '{print $2}' | sed "s|,.*||g" | tr -d '\n' | sed "s/^[t ]*//g")
   else
-    ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$file" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" >> /dev/null 2> $TEMP_KEY
+    ${sudo} "${apt}" update -o Dir::Etc::sourcelist="$archive_list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" >> /dev/null 2> $TEMP_KEY
     KEY=$(cat $TEMP_KEY | cut -d ':' -f 6 | cut -d ' ' -f 3)
   fi
   # Here we're importing the key from keyserver, exporting to file, dearmoring and deleting when done.
