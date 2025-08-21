@@ -250,7 +250,7 @@ fi
 apt="apt"
 dpkg="dpkg"
 sudo="sudo"
-debget="./deb-get/deb-get"
+debget="deb-get"
 
 deb_download() {
   # Credit: deb-get 
