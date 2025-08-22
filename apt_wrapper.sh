@@ -808,7 +808,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     apt-mark|am)
       shift
-      ${sudo} "${apt}" apt-mark "$@"
+      ${sudo} "${apt}-mark" "$@"
       break
       ;;
     pin|pi)
