@@ -745,7 +745,19 @@ while [[ $# -gt 0 ]]; do
       ;;
     search|s)
       shift
-      "${apt}" search "$@"
+      "${apt}" search -o APT::Cache::Search::Version=1 "$@" 2>/dev/null |
+      while read -r line
+      do
+        line1=$(echo $line | grep -oP ".* - " | sed "s| - ||g")
+        line2=$(echo $line | grep -oP " - .*" | sed "s| - ||g")
+        installed=$(apt policy $line1 2>/dev/null | grep -oP "Installed: .*")
+        candidate=$(apt policy $line1 2>/dev/null | grep -oP "Candidate: .*")
+        echo "${GREEN}${line1}${NORMAL}"
+        echo "  ${line2}"
+        echo "  ${installed}"
+        echo "  ${candidate}"
+        echo
+      done
       break
       ;;
     find|f)
