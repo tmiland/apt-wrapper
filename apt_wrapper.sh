@@ -698,13 +698,16 @@ enable_disable_sources() {
 modernize_sources() {
   if [[ $(apt -v | sed -n 's/[^0-9.]*\([0-9.]*\).*/\1/p') > "2.9.26" ]]
   then
-  ${sudo} "${apt}" modernize-sources || message fatal "Something went wrong..."
-  if ! [ -d /etc/apt/sources.list.old  ]; then
-    ${sudo} mkdir -p /etc/apt/sources.list.old || message fatal "Something went wrong..."
-  fi
-    message info "Moving old files to /etc/apt/sources.list.old"
-    ${sudo} mv /etc/apt/sources.list.d/*.list.bak /etc/apt/sources.list.old/ || message fatal "Something went wrong..."
-    message info "Done."
+    if ! apt modernize-sources 2>/dev/null | grep "All sources are modern."
+    then
+      ${sudo} "${apt}" modernize-sources || message fatal "Something went wrong..."
+      if ! [ -d /etc/apt/sources.list.old  ]; then
+        ${sudo} mkdir -p /etc/apt/sources.list.old || message fatal "Something went wrong..."
+      fi
+      message info "Moving old files to /etc/apt/sources.list.old"
+      ${sudo} mv /etc/apt/sources.list.d/*.list.bak /etc/apt/sources.list.old/ || message fatal "Something went wrong..."
+      message info "Done."
+    fi
   else
     message warning "apt is older than 2.9.26"
     exit 1
